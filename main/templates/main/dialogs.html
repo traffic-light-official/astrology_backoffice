@@ -1,0 +1,21 @@
+{% extends 'main/layout.html' %}
+
+
+{% block title %}View Dialogs{% endblock %}
+
+
+{% load bootstrap %}
+
+
+{% block content %}
+<div class="features">
+    <form method="POST" class="form-control">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+        <span>{{ error }}</span>
+        {% if add_button %}
+            <button class="btn btn-success" type="submit">Update</button>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

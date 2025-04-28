@@ -1,0 +1,19 @@
+{% extends 'main/layout.html' %}
+
+
+{% block title %}Update{% endblock %}
+
+
+{% load bootstrap %}
+
+
+{% block content %}
+<div class="features">
+    <form method="POST" class="form-control">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+        <span>{{ error }}</span>
+        <button class="btn btn-success" type="submit">Update</button>
+    </form>
+</div>
+{% endblock %}

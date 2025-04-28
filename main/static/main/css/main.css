@@ -1,0 +1,85 @@
+body {
+    background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+    "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+}
+
+header {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    width: 100%;
+    padding: 0 24px 0 0;
+    background-color: #343a40;
+    z-index: 1;
+}
+
+
+header a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    width: 240px;
+    font-size: 20px;
+    color: #fff;
+}
+
+aside {
+    position: fixed;
+    float: left;
+    background: #2A3F54;
+    width: 240px;
+    height: 100vh;
+    color: #fff;
+}
+
+main {
+    margin-left: 240px;
+    padding: 73px 10px 0 10px;
+}
+
+aside ul {
+    list-style: none;
+    padding: 60px 0 0 0;
+    text-align: center;
+    margin: 0 auto;
+    width: max-content;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    transition: transform .6s ease;
+}
+
+
+aside ul li {
+    color: #fff;
+    display: block;
+    margin-top: 20px;
+    transition: transform .6s ease;
+    text-align: left;
+}
+
+aside ul li:hover, aside ul a:hover, header a:hover {
+    color: #929597;
+    transform: scale(1.05)
+}
+
+.page-navigation {
+    justify-content: space-between;
+    display: flex;
+}
+
+.users-search-container {
+    justify-content: space-between;
+    display: flex;
+}
+
+.user-table-form {
+    display: flex;
+}
