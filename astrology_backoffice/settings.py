@@ -33,7 +33,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'bootstrapform',
-    'main',
+    'users',
+    'ai_settings',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,25 +76,25 @@ WSGI_APPLICATION = 'astrology_backoffice.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'HOST': '127.0.0.1',
-#         'PORT': '3306',
-#         'NAME': 'astrology',
-#         'USER': 'root',
-#         'PASSWORD': 'root'
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
-        'NAME': 'hs20',
-        'USER': 'hs',
-        'PASSWORD': 'iEQSwT2PWygu4mgZc'
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'NAME': 'astrology',
+        'USER': 'root',
+        'PASSWORD': 'root'
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'HOST': 'localhost',
+#         'NAME': 'hs20',
+#         'USER': 'hs',
+#         'PASSWORD': 'iEQSwT2PWygu4mgZc'
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

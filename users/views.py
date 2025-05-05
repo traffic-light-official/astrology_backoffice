@@ -1,5 +1,10 @@
+import stripe
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
 from . import dao
 from .forms import UserInfo, UserDialogs, Prompts
 
@@ -25,7 +30,7 @@ def pagination_users(request, users: tuple):
 
 
 def index(request):
-    return render(request, 'main/index.html')
+    return render(request, 'users/index.html')
 
 
 def users(request):
@@ -37,7 +42,7 @@ def users(request):
     else:
         users = dao.get_users()
     users_page_obj = pagination_users(request=request, users=users)
-    return render(request, 'main/users.html', {'users_page_obj': users_page_obj,
+    return render(request, 'users/users.html', {'users_page_obj': users_page_obj,
                                                'list_titles': list_titles, })
 
 
@@ -60,7 +65,7 @@ def users_detail(request, user_id: int):
     context = {'user_details': user_details, 'activity_titles': activity_titles, 'additional_titles': additional_titles,
                'interest_titles': interest_titles, 'last_request_titles': last_request_titles,
                'dialogs_titles': dialogs_titles}
-    return render(request, 'main/users_detail.html', context)
+    return render(request, 'users/users_detail.html', context)
 
 
 def update_user_info(request, user_id: int):
@@ -80,7 +85,7 @@ def update_user_info(request, user_id: int):
         else:
             context['error'] = 'The form is filled out incorrectly'
 
-    return render(request, 'main/edit.html', context)
+    return render(request, 'users/edit.html', context)
 
 
 def view_dialogs(request, dialog_id: int):
@@ -89,7 +94,7 @@ def view_dialogs(request, dialog_id: int):
 
     context = {'form': form}
 
-    return render(request, 'main/dialogs.html', context)
+    return render(request, 'users/dialogs.html', context)
 
 
 def update_dialog(request, dialog_id: int):
@@ -109,56 +114,43 @@ def update_dialog(request, dialog_id: int):
         else:
             context['error'] = 'The form is filled out incorrectly'
 
-    return render(request, 'main/dialogs.html', context)
+    return render(request, 'users/dialogs.html', context)
 
 
 def delete_user(request, user_id: int):
     if request.method == 'POST':
         dao.remove_user(user_id=user_id)
         return redirect(f'/users')
-    return render(request, 'main/delete_items.html')
+    return render(request, 'users/delete_items.html')
 
 
 def delete_dialog(request, dialog_id: int, user_id: int):
     if request.method == 'POST':
         dao.remove_dialog(dialog_id=dialog_id)
         return redirect(f'/users/{user_id}')
-    return render(request, 'main/delete_items.html')
+    return render(request, 'users/delete_items.html')
 
 
-def ai_settings(request):
-    prompts_titles = ['SystemPrompt', 'SoftPrompt']
-    prompts = dao.get_prompts()
-
-    context = {'prompts': prompts, 'prompts_titles': prompts_titles}
-
-    return render(request, 'ai_settings/ai_settings.html', context)
+endpoint_secret = 'whsec_c1886e7182ef71c90839c63db34f446e9a3c95071ffb3646c6ea77430ee97d39'
 
 
-def view_prompts(request):
-    prompts = dao.get_dictionary_prompts()
-    form = Prompts(data=prompts, readonly=True)
+@csrf_exempt
+def my_webhook_view(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
 
-    context = {'form': form}
+    try:
+        event = stripe.Webhook.construct_event(
+          payload, sig_header, endpoint_secret
+        )
+    except ValueError:
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError:
+        return HttpResponse(status=400)
 
-    return render(request, 'main/dialogs.html', context)
+    if event['type'] == 'checkout.session.completed' or event['type'] == 'checkout.session.async_payment_succeeded':
+        print(event['data'])
+        # fulfill_checkout(event['data']['object']['id'])
+        pass
 
-
-def update_prompts(request, prompts_id: int):
-    error = ''
-    prompts = dao.get_dictionary_prompts()
-    form = Prompts(data=prompts)
-
-    context = {'form': form, 'error': error, 'add_button': True}
-
-    if request.method == 'POST':
-        form = Prompts(request.POST)
-        if form.is_valid():
-            data = request.POST.copy()
-            data.pop('csrfmiddlewaretoken', None)
-            dao.update_prompts(values=data, prompts_id=prompts_id)
-            context['form'] = form
-        else:
-            context['error'] = 'The form is filled out incorrectly'
-
-    return render(request, 'main/dialogs.html', context)
+    return HttpResponse(status=200)
