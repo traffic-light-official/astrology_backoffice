@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from . import dao
 from .forms import UserInfo, UserDialogs, Prompts
+from .transactions import checkout_transaction
 
 
 dialogs_titles = ['Role', 'Content']
@@ -149,8 +150,6 @@ def my_webhook_view(request):
         return HttpResponse(status=400)
 
     if event['type'] == 'checkout.session.completed' or event['type'] == 'checkout.session.async_payment_succeeded':
-        print(event['data'])
-        # fulfill_checkout(event['data']['object']['id'])
-        pass
+        checkout_transaction(event['data']['object']['id'])
 
     return HttpResponse(status=200)

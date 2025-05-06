@@ -1,35 +1,30 @@
 from datetime import datetime
 
 
-from pydantic import BaseModel, field_validator
-
-
-class PresentmentDetails(BaseModel):
-    presentment_amount: int
-    presentment_currency: str
-
-
-class Data(BaseModel):
-    quantity: int
-
-
-class LineItems(BaseModel):
-    data: list[Data]
+from pydantic import BaseModel, field_validator, Field, AliasPath
 
 
 class TransactionInfo(BaseModel):
-    client_reference_id: str
+    id: str
+    client_reference_id: str | int
     created: int
     currency: str
     payment_status: str
     amount_total: int
-    line_items: LineItems
-    presentment_details: PresentmentDetails | None = None
+    email: str = Field(default=None, validation_alias=AliasPath('customer_details', 'email'))
+    country: str = Field(default=None, validation_alias=AliasPath('customer_details', 'address', 'country'))
+    quantity: int = Field(validation_alias=AliasPath('line_items', 'data', 0, 'quantity'))
+    presentment_amount: int = Field(default=None, validation_alias=AliasPath('presentment_details',
+                                                                             'presentment_amount'))
+    presentment_currency: str = Field(default=None, validation_alias=AliasPath('presentment_details',
+                                                                               'presentment_currency'))
+
 
     @field_validator("created")
     @classmethod
     def created_datetime(cls, v: int):
         return datetime.fromtimestamp(v)
+
 
     @field_validator("client_reference_id")
     @classmethod
