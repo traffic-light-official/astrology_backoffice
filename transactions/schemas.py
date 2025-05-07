@@ -30,3 +30,17 @@ class TransactionInfo(BaseModel):
     @classmethod
     def type_client_reference(cls, v: str):
         return int(v)
+
+    @field_validator("presentment_amount")
+    @classmethod
+    def validate_presentment_amount(cls, v: int):
+        if v is not None:
+            v = v * 0.01
+            return v
+        return v
+
+    @field_validator("amount_total")
+    @classmethod
+    def validate_total_amount(cls, v: int):
+        v = v * 0.01
+        return v

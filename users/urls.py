@@ -11,5 +11,4 @@ urlpatterns = [
     path('users/<int:dialog_id>/dialog/view', views.view_dialogs, name='view_dialog'),
     path('users/<int:dialog_id>/dialog/update', views.update_dialog, name='update_dialog'),
     path('users/<int:dialog_id>/<int:user_id>/dialog/delete', views.delete_dialog, name='delete_dialog'),
-    path('users/webhook', views.my_webhook_view, name='users_webhook'),
 ]

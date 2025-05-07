@@ -1,9 +1,16 @@
 import stripe
+from decouple import config
+
+
+from users.dao import update_user_info
 from . import dao
-from .schemas import TransactionInfo
+
+from transactions.schemas import TransactionInfo
 
 
 def checkout_transaction(session_id: str):
+    stripe.api_key = config('STRIPE_API_KEY')
+
     if session_id == dao.get_id_transaction(transaction_id=session_id):
         return
 
@@ -16,8 +23,12 @@ def checkout_transaction(session_id: str):
 
     if checkout_session.payment_status == 'paid':
         dao.create_transactions(values=transaction_info)
-        dao.update_user_info(values={'email': transaction_info.email, 'country': transaction_info.country},
+        update_user_info(values={'email': transaction_info.email, 'country': transaction_info.country},
                              user_id=transaction_info.client_reference_id)
         astrals = dao.get_user_astrals(user_id=transaction_info.client_reference_id)
-        astrals += transaction_info.quantity
+        if transaction_info.quantity == 25:
+            astrals += transaction_info.quantity
+            astrals += 2
+        else:
+            astrals += transaction_info.quantity
         dao.update_astrals(values={'astrals': astrals}, user_id=transaction_info.client_reference_id)

@@ -1,0 +1,70 @@
+{% extends 'users/layout.html' %}
+
+
+{% block title %}Transactions{% endblock %}
+
+
+{% block content %}
+    <div class="users-search-container">
+        <h3>Transactions</h3>
+        <form method="get" class="mb-3 user-table-form">
+            <button class="btn btn-primary" type="submit" >Search</button>
+            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="telegram_id" class="form-control" />
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-responsive">
+            <tr>
+                {% for title in list_titles %}
+                    <th>{{ title }}</th>
+                {% endfor %}
+            </tr>
+            {% for trans in transactions_page_obj %}
+                <tr>
+                    <td><a href="{% url 'users_detail' trans.1 %}">{{ trans.1 }}</a></td>
+                    <td>{{ trans.2 }}</td>
+                    <td>{{ trans.6 }}</td>
+                    <td>{{ trans.7 }}</td>
+                    <td>{{ trans.3 }}</td>
+                    <td><a href="{% url 'transaction_details' trans.0 %}"><i class="fas fa-eye"></i></a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <nav class="page-navigation">
+            {% with start=transactions_page_obj.start_index end=transactions_page_obj.end_index total=transactions_page_obj.paginator.count %}
+            <div class="pagination-info">
+                Showing {{ start }}–{{ end }} of {{ total }} items.
+            </div>
+            {% endwith %}
+            <ul class="pagination">
+                {% if transactions_page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page=1" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">begin</span>
+                  </a>
+                </li>
+                {% endif %}
+
+                {% for n in transactions_page_obj.paginator.page_range %}
+                  {% if transactions_page_obj.number == n %}
+                    <li class="page-item active">
+                      <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+                    </li>
+                  {% elif n > transactions_page_obj.number|add:'-3' and n < transactions_page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+                  {% endif %}
+                {% endfor %}
+
+                {% if transactions_page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ users_page_obj.paginator.num_pages }}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">end</span>
+                    </a>
+                  </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

@@ -6,8 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 from . import dao
-from .forms import UserInfo, UserDialogs, Prompts
-from .transactions import checkout_transaction
+from .forms import UserInfo, UserDialogs
+from transactions.transactions import checkout_transaction
 
 
 dialogs_titles = ['Role', 'Content']
@@ -30,14 +30,10 @@ def pagination_users(request, users: tuple):
     return page_obj
 
 
-def index(request):
-    return render(request, 'users/index.html')
-
-
 def users(request):
     query = request.GET.get('q', '')
     list_titles = ['TelegramID', 'Name', 'Birth date', 'Birth time', 'Place of birth', 'Zodiac sign',
-                   'Chinese zodiac', 'Gender', 'Language']
+                   'Chinese zodiac', 'Gender', 'Language', 'Email', 'Country']
     if query:
         users = dao.get_search_for_users(query=query)
     else:
@@ -130,26 +126,3 @@ def delete_dialog(request, dialog_id: int, user_id: int):
         dao.remove_dialog(dialog_id=dialog_id)
         return redirect(f'/users/{user_id}')
     return render(request, 'users/delete_items.html')
-
-
-endpoint_secret = 'whsec_c1886e7182ef71c90839c63db34f446e9a3c95071ffb3646c6ea77430ee97d39'
-
-
-@csrf_exempt
-def my_webhook_view(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-
-    try:
-        event = stripe.Webhook.construct_event(
-          payload, sig_header, endpoint_secret
-        )
-    except ValueError:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError:
-        return HttpResponse(status=400)
-
-    if event['type'] == 'checkout.session.completed' or event['type'] == 'checkout.session.async_payment_succeeded':
-        checkout_transaction(event['data']['object']['id'])
-
-    return HttpResponse(status=200)

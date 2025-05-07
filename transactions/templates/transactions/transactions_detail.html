@@ -1,0 +1,23 @@
+{% extends 'users/layout.html' %}
+
+
+{% block title %}Transactions details{% endblock %}
+
+
+{% block content %}
+    <h3>Transactions details</h3>
+    <div class="table-responsive">
+        <table class="table table-hover table-responsive table-bordered">
+            <tr>
+                {% for title in list_titles %}
+                    <th>{{ title }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for elem in transactions_details %}
+                    <td>{{ elem }}</td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+{% endblock %}
